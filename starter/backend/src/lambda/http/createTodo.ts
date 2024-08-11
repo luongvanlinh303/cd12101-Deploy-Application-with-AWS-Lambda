@@ -1,15 +1,14 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import 'source-map-support/register'
-import * as middy from 'middy'
-import { cors,httpErrorHandler } from 'middy/middlewares'
+import middy from '@middy/core';
+import cors from '@middy/http-cors'
+import httpErrorHandler from '@middy/http-error-handler'
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { getUserId } from '../utils';
 import { createToDo } from '../../helpers/todos' 
 import { createLogger } from '../../utils/logger'
 
-
 const logger = createLogger('Log from createTodo.ts');
-
 export const handler = middy(
 async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     // TODO: Implement creating a new TODO item

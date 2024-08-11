@@ -1,15 +1,13 @@
 import 'source-map-support/register'
-
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as middy from 'middy'
-import { cors, httpErrorHandler } from 'middy/middlewares'
+import middy from '@middy/core';
+import cors from '@middy/http-cors'
+import httpErrorHandler from '@middy/http-error-handler'
 import { getUserId } from '../utils';
 import { createLogger } from '../../utils/logger';
 import { getAllToDo } from '../../helpers/todos';
 
-
 const logger = createLogger('GetTodos');
-// TODO: Get all TODO items for a current user
 export const handler = middy(
     async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     logger.info('Getting All Event: ', event);

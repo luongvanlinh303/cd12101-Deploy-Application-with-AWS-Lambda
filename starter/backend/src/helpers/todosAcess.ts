@@ -4,9 +4,9 @@ import { Types } from 'aws-sdk/clients/s3';
 import { TodoItem } from "../models/TodoItem";
 import { TodoUpdate } from "../models/TodoUpdate";
 import { createLogger } from '../utils/logger';
-import * as AWSXRay from 'aws-xray-sdk';
 
 const logger = createLogger('Log from TodoAccess.ts');
+const AWSXRay = require('aws-xray-sdk');
 const XAWS = AWSXRay.captureAWS(AWS);
 
 export class ToDoAccess {
@@ -152,11 +152,11 @@ export class ToDoAccess {
 
 function createDynamoDBClient() {
     if (process.env.IS_OFFLINE) {
-      return new AWS.DynamoDB.DocumentClient({
+      return new XAWS.DynamoDB.DocumentClient({
         region: 'localhost',
         endpoint: 'http://localhost:8000'
       })
     }
   
-    return new AWS.DynamoDB.DocumentClient()
+    return new XAWS.DynamoDB.DocumentClient()
   }
