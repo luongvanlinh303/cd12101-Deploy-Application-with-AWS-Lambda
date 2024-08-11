@@ -37,34 +37,10 @@ custom:
     models:
       - name: CreateTodoRequest
         contentType: 'application/json'
-        # schema: ${file(models/create-todo-validate-model.json)}
-        # Example for not use validate.json
-        schema:
-          required:
-            - name
-            - dueDate
-          properties:
-            name:
-              minLength: 1
-              type: string
-            dueDate:
-              type: string
+        schema: ${file(models/create-todo-validate-model.json)}
       - name: UpdateTodoRequest
         contentType: 'application/json'
-        # schema: ${file(models/update-todo-validate-model.json)}
-        schema:
-          required:
-            - name
-            - dueDate
-            - done
-          properties:
-            name:
-              minLength: 1
-              type: string
-            dueDate:
-              type: string
-            done:
-              type: boolean
+        schema: ${file(models/update-todo-validate-model.json)}
 
 package:
   individually: true
