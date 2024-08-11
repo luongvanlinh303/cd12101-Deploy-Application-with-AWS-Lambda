@@ -1,12 +1,11 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
 org: linhlv98
-# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
 app: linhlv30
 service: serverless-todo-app
 
 plugins:
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -19,14 +18,16 @@ provider:
     apiGateway: true
 
   environment:
-    UDACITY_PROJECT_NAME: linhlv98-serverless-todo-app
-    TODOS_TABLE: linhlv98-serverles-${self:provider.stage}
-    S3_BUCKET_NAME: linhlv98-serverles-${self:provider.stage}
-
-  logs:
-    restApi: true
+    UDACITY_PROJECT_NAME: linhlv-serveless-${self:provider.stage}
+    TODOS_TABLE: linhlv-serverless-${self:provider.stage}
+    S3_BUCKET_NAME: linhlv-serverless-${self:provider.stage}
 
 custom:
+  build:
+    esbuild:
+      bundle: true
+      minify: true
+      target: 'node18'
   documentation:
     api:
       info:
@@ -64,6 +65,16 @@ custom:
               type: string
             done:
               type: boolean
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  exclude:
+    - node_modules/**
+    - test/**
+    - README.md
+    - .git/**
+
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
@@ -87,6 +98,8 @@ functions:
           - xray:PutTraceSegments
         Resource:
           - '*'
+
+  # Create todo
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
     events:
@@ -112,6 +125,8 @@ functions:
           - xray:PutTraceSegments
         Resource:
           - '*'
+
+  # Update todo
   UpdateTodo:
     handler: src/lambda/http/updateTodo.handler
     events:
@@ -137,6 +152,8 @@ functions:
           - xray:PutTraceSegments
         Resource:
           - '*'
+
+  # Delete Todo
   DeleteTodo:
     handler: src/lambda/http/deleteTodo.handler
     events:
@@ -162,6 +179,7 @@ functions:
         Action:
           - s3:DeleteObject
         Resource: arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/*
+
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
@@ -185,8 +203,10 @@ functions:
           - xray:PutTraceSegments
         Resource:
           - '*'
+
 resources:
   Resources:
+    # TODO: Add any necessary AWS resources
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -232,6 +252,7 @@ resources:
           BlockPublicPolicy: false
           IgnorePublicAcls: false
           RestrictPublicBuckets: false
+
     RequestBodyValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:
@@ -240,6 +261,8 @@ resources:
           Ref: ApiGatewayRestApi
         ValidateRequestBody: true
         ValidateRequestParameters: false
+
+    # Response for Err status 4xx
     GatewayResponseDefault4XX:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
@@ -250,6 +273,8 @@ resources:
         ResponseType: DEFAULT_4XX
         RestApiId:
           Ref: ApiGatewayRestApi
+
+    # Response for Err status 5xx
     GatewayResponseDefault5XX:
       Type: AWS::ApiGateway::GatewayResponse
       Properties:
@@ -260,6 +285,8 @@ resources:
         ResponseType: DEFAULT_5XX
         RestApiId:
           Ref: ApiGatewayRestApi
+
+    # For cross referencing the name of the bucket, use "!Ref AttachmentsBucket"
     BucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:
