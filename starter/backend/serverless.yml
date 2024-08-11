@@ -23,11 +23,6 @@ provider:
     S3_BUCKET_NAME: linhlv-serverless-${self:provider.stage}
 
 custom:
-  build:
-    esbuild:
-      bundle: true
-      minify: true
-      target: 'node18'
   documentation:
     api:
       info:
@@ -37,19 +32,34 @@ custom:
     models:
       - name: CreateTodoRequest
         contentType: 'application/json'
-        schema: ${file(models/create-todo-validate-model.json)}
+        schema:
+          required:
+            - name
+            - dueDate
+          properties:
+            name:
+              minLength: 1
+              type: string
+            dueDate:
+              type: string
       - name: UpdateTodoRequest
         contentType: 'application/json'
-        schema: ${file(models/update-todo-validate-model.json)}
+        schema:
+          required:
+            - name
+            - dueDate
+            - done
+          properties:
+            name:
+              minLength: 1
+              type: string
+            dueDate:
+              type: string
+            done:
+              type: boolean
 
 package:
   individually: true
-  excludeDevDependencies: true
-  exclude:
-    - node_modules/**
-    - test/**
-    - README.md
-    - .git/**
 
 functions:
   Auth:
