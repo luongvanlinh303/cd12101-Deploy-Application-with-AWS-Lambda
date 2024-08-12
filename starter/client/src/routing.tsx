@@ -4,10 +4,9 @@ import { Router, Route } from 'react-router-dom'
 import Callback from './components/Callback'
 import App from './App';
 import { createBrowserHistory } from "history";
+
 const history = createBrowserHistory();
-
 const auth = new Auth(history)
-
 const handleAuthentication = (props: any) => {
   const location = props.location
   if (/access_token|id_token|error/.test(location.hash)) {
